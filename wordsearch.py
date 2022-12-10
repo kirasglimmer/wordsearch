@@ -31,11 +31,19 @@ def match_word(word, filter):
 
 
 # returns the word if it contains all the letters in the set
-def contains_set(word, set):
+def contains_set(word, set, exclusive):
     matches = 0
     for w in word:
-        if set.find(w) >= 0:
-            matches += 1
+        if set.find(w) < 0:
+            break
+
+        matches += 1
+        if exclusive == False:
+            continue
+
+        set = set.replace(w, '', 1)
+        if len(set) == 0:
+            break
     
     # only return the word if the number of matches is the same
     if matches == len(word):
@@ -60,10 +68,10 @@ def filter_words(words, filter):
 
 
 # filters a list of words based on all possible letters
-def filter_set(words, set):
+def filter_set(words, set, exclusive):
     results = []
     for word in words:
-        if contains_set(word, set):
+        if contains_set(word, set, exclusive):
             results.append(word)
 
     return results
@@ -92,17 +100,15 @@ def show_help():
 
 
 if __name__ == '__main__':
-
-    print(f'arg length: {len(sys.argv)}')
     if len(sys.argv) < 3:
         print('Missing required parameters')
         show_help()
     
     filter = sys.argv[1]
     letter_set = sys.argv[2]
-    any_in_set = False
+    exclusive = False
     if len(sys.argv) > 3:
-        any_in_set = (sys.argv[3].casefold() == 'y')
+        exclusive = (sys.argv[3].casefold() == 'y')
 
     # get all the words
     all_words = load_words()
@@ -111,9 +117,15 @@ if __name__ == '__main__':
     filtered_words = get_words(all_words, filter)
 
     # get all the words containing the letter set
-    words_in_set = filter_set(filtered_words, letter_set)
+    words_in_set = filter_set(filtered_words, letter_set, exclusive)
 
-    print(f'All the words matching {filter} with the letter set {letter_set} using an exclusive filter {any_in_set}:')
-    for word in words_in_set:
-        print(f'{word}')
+    print(f'All the words matching {filter} with the letter set {letter_set} using an exclusive filter {exclusive}:')
+    print()
+    if len(words_in_set) > 0:
+        for word in words_in_set:
+            print(f'{word}')
+    else:
+        print('No words found')
+
+    print()
 
