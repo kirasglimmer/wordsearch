@@ -3,8 +3,8 @@ import sys, getopt
 
 # loads the word database in an array, converts each word to lowercase
 # returns the array of words
-def load_words():
-    with open('words.txt') as word_file:
+def load_words(file_name):
+    with open(file_name) as word_file:
         valid_words = set(word_file.read().split())
 
     results = []
@@ -111,7 +111,7 @@ if __name__ == '__main__':
         exclusive = (sys.argv[3].casefold() == 'y')
 
     # get all the words
-    all_words = load_words()
+    all_words = load_words('words.txt')
 
     # filter the wordlist
     filtered_words = get_words(all_words, filter)

@@ -1,4 +1,4 @@
 pyvenv.cfg
 bin
 lib
-words.txt
+*.txt
