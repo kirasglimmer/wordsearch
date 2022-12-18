@@ -98,34 +98,41 @@ def show_help():
     print()
     exit()
 
+def read_input():
+    while True:
+        filter = input("Filter: ").casefold()
+
+def get_letter_set():
+    letter_set = input("Letter set: ")
+    if letter_set == '':
+        exit()
+    return letter_set
+
 
 if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        print('Missing required parameters')
-        show_help()
-    
-    filter = sys.argv[1]
-    letter_set = sys.argv[2]
-    exclusive = False
-    if len(sys.argv) > 3:
-        exclusive = (sys.argv[3].casefold() == 'y')
+    letter_set = get_letter_set()
+    exclusive = input("Exclusive [y/n]").casefold() == 'y'
+    while True:
+        filter = input("Filter: ").casefold()
+        if filter == '':
+            letter_set = get_letter_set()
+        
+        # get all the words
+        all_words = load_words('words.txt')
 
-    # get all the words
-    all_words = load_words('words.txt')
+        # filter the wordlist
+        filtered_words = get_words(all_words, filter)
 
-    # filter the wordlist
-    filtered_words = get_words(all_words, filter)
+        # get all the words containing the letter set
+        words_in_set = filter_set(filtered_words, letter_set, exclusive)
 
-    # get all the words containing the letter set
-    words_in_set = filter_set(filtered_words, letter_set, exclusive)
+        print(f'All the words matching {filter} with the letter set {letter_set} using an exclusive filter {exclusive}:')
+        print()
+        if len(words_in_set) > 0:
+            for word in words_in_set:
+                print(f'{word}')
+        else:
+            print('No words found')
 
-    print(f'All the words matching {filter} with the letter set {letter_set} using an exclusive filter {exclusive}:')
-    print()
-    if len(words_in_set) > 0:
-        for word in words_in_set:
-            print(f'{word}')
-    else:
-        print('No words found')
-
-    print()
+        print()
 
