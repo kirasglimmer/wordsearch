@@ -91,17 +91,15 @@ def get_words(words, filter):
     return results
 
 
-# displays the help
-def show_help():
-    print('finds matching words using a filter and a set of letters')
-    print('usage: wordsearch.py <filter> <letter set>')
-    print()
-    exit()
+# prints the words in a set of column
+def print_words(words):
+    for idx in range(len(words)):
+        print(f" {words[idx]:<11}", end="")
 
-def read_input():
-    while True:
-        filter = input("Filter: ").casefold()
+        if (idx+1) % 4 == 0:
+            print()
 
+# gets the letter set with a standard prompt
 def get_letter_set():
     letter_set = input("Letter set: ")
     if letter_set == '':
@@ -109,17 +107,28 @@ def get_letter_set():
     return letter_set
 
 
+# displays the help
+def show_help():
+    print('finds matching words using a filter and a set of letters')
+    print('usage: wordsearch.py <filter> <letter set>')
+    print()
+    exit()
+
+
+# 
 if __name__ == '__main__':
+    # do initial reads
     letter_set = get_letter_set()
     exclusive = input("Exclusive [y/n]").casefold() == 'y'
+
+    # get all the words
+    all_words = load_words('words.txt')
+
     while True:
         filter = input("Filter: ").casefold()
         if filter == '':
             letter_set = get_letter_set()
         
-        # get all the words
-        all_words = load_words('words.txt')
-
         # filter the wordlist
         filtered_words = get_words(all_words, filter)
 
@@ -127,12 +136,13 @@ if __name__ == '__main__':
         words_in_set = filter_set(filtered_words, letter_set, exclusive)
 
         print(f'All the words matching {filter} with the letter set {letter_set} using an exclusive filter {exclusive}:')
+        print_words(words_in_set)
         print()
-        if len(words_in_set) > 0:
-            for word in words_in_set:
-                print(f'{word}')
-        else:
-            print('No words found')
 
-        print()
+        #if len(words_in_set) > 0:
+        #    for word in words_in_set:
+        #        print(f'{word}')
+        #else:
+        #    print('No words found')
+        #print()
 
