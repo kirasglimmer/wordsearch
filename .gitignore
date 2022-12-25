@@ -2,3 +2,5 @@ pyvenv.cfg
 bin
 lib
 *.txt
+**/__pycache__
+
