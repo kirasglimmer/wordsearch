@@ -1,17 +1,19 @@
-import sys, getopt
+from src.wordgame import WordGame
+from multiprocessing import Pool, Lock
 
+class WordSearch(WordGame):
+    """WordSearch game"""
 
-class WordSearch:
-    """WordSearch version of the game"""
-
-    words = None
+    words = []
     letter_set = ''
-    filter = ''
+    pool_size = 8
+    lock = Lock()
 
 
+    # constructor
     def __init__(self, words):
         self.words = words
-    
+
 
     # resets the internal game state
     def reset(self, letter_set):
@@ -20,73 +22,55 @@ class WordSearch:
 
     # processes the filter and displays the results
     def process(self):
+        print('Playing Wordsearch! Have fun!')
+        print()
+
         filter = ''
-        letter_set = self.get_letter_set()
+        self.letter_set = input('Letter set: ')
+        if self.letter_set == '':
+            return
+
+        # get all words that contain these letters
+        # includes words that are a subset of the letter set
+        base_words = self.filter_set(self.words, self.letter_set)
+        print(f'There are {len(base_words)} to choose from out of {len(self.words)} words')
+
         while True:
             filter = input("Filter: ").casefold()
             if filter == '':
-                letter_set = self.get_letter_set()
-                continue
-
-            # play the game
-            filtered_words = self.get_words(self.words, filter)
-            words_in_set = self.filter_set(filtered_words, letter_set)
-
-            if len(words_in_set) > 0:
-                print(f'All the words matching {filter} with the letter set {letter_set} using an exclusive filter')
-                self.print_words(words_in_set)
-            else:
-                print("No matches found")
-            print()
-
-
-    # matches a word to the filter
-    def match_word(self, word, filter):
-        if len(word) != len(filter):
-            print(f'Error: word {word} is different length than filter {filter}')
-            exit()
-
-        for i in range(len(word)):
-            if filter[i] == '#':
-                continue
-            if word[i] != filter[i]:
                 return
 
-        return word
+            filtered_words = super().filter_words(base_words, filter)
+            print(f'Found {len(filtered_words)} words')
+
+            super().print_words(filtered_words)
 
 
-    # returns the word if it contains all the letters in the set
-    def contains_set(self, word, set):
-        matches = 0
-        for w in word:
-            if set.find(w) < 0:
-                break
 
-            matches += 1
-
-            set = set.replace(w, '', 1)
-            if len(set) == 0:
-                break
-        
-        # only return the word if the number of matches is the same
-        if matches == len(word):
-            return word
-
-
-    # filters a list of words based
-    # filter format is:
-    #     #: for placeholder
-    #   A-Z: matching letters
-    def filter_words(self, words, filter):
+    def filter_set_handler(self, words):
         results = []
-        length = len(filter)
-        for word in words:
-            if len(word) != length:
-                continue
-            
-            if self.match_word(word, filter):
-                results.append(word)
+        set = self.set
 
+        for word in words:
+            if self.contains_set(word, set):
+                results.append(word)
+        
+        return results
+
+
+    def filter_set_parallel(self, words, set):
+        self.set = set
+        results = []
+        count = int(len(words) / self.pool_size)
+
+        print(f'Beginning parallel processing loop with pool size of {self.pool_size} and estimated chunk size of {count}')
+
+        with Pool(self.pool_size) as pool:
+            for result in pool.imap_unordered(self.filter_set_handler, words, count):
+                results.append(result)
+            pool.close()
+
+        print(f'Total matches: {len(results)}')
         return results
 
 
@@ -100,32 +84,15 @@ class WordSearch:
         return results
 
 
-    # gets all the words of the specified length
-    def get_words(self, words, filter):
-        results = []
-        length = len(filter)
-        for word in words:
-            if len(word) != length:
-                continue
-            
-            if self.match_word(word, filter):
-                results.append(word)
+    # returns the word if it contains all the letters in the set
+    def contains_set(self, word, set):
+        matches = 0
+        for l in word:
+            if set.find(l) > -1:
+                matches += 1
+                set = set.replace(l, '', 1)
+                if len(set) == 0:
+                    break
         
-        return results
-
-
-    # prints the words in a set of column
-    def print_words(self, words):
-        for idx in range(len(words)):
-            print(f" {words[idx]:<11}", end="")
-
-            if (idx+1) % 4 == 0:
-                print()
-
-    # gets the letter set with a standard prompt
-    def get_letter_set(self):
-        letter_set = input("Letter set: ")
-        if letter_set == '':
-            exit()
-        return letter_set
-
+        if matches == len(word):
+            return word
