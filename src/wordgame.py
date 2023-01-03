@@ -49,7 +49,8 @@ class WordGame(ABC):
             if self.match_word(word, filter):
                 results.append(word)
 
-        return results.sort()
+        results.sort()
+        return results
 
 
     # gets all the words of the specified length
@@ -87,16 +88,15 @@ class WordGame(ABC):
 
 
     # prints the words in a set of column
-    def print_words(self, words):
-        if len(words) > 0:
-            print(f'Matching words')
-
+    def print_words(self, words, cols=8):
+        if words and len(words) > 0:
+            print('Matching words')
             for idx in range(len(words)):
                 print(f" {words[idx]:<11}", end="")
 
-                if (idx+1) % 8 == 0:
+                if (idx+1) % cols == 0:
                     print()
         else:
-            print("No matches found")
+            print('No matches found')
         print()
         
