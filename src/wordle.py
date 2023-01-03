@@ -27,7 +27,12 @@ class Wordle(WordGame):
         self.letter_set = 'abcdefghijklmnopqrstuvwyxz'
         self.base_words = super().get_words_of_length(self.words, 5)
         print(f'There are {len(self.base_words)} words with length 5 to search within')
-    
+
+
+    # gets a unique letter set from the given list
+    def unique_letters(self, letters):
+        return ''.join(set(letters))
+
 
     # process the game
     def process(self):
@@ -38,7 +43,10 @@ class Wordle(WordGame):
         print()
 
         while True:
-            bad_letters   = input('Invalid letters: ') or ''
+            bad_letters   = self.unique_letters(input('Invalid letters: ') or '')
+            if not bad_letters:
+                break
+
             known_letters = input('  Known letters: ') or ''
             valid_letters = input('  Valid letters: ') or '#####'
 

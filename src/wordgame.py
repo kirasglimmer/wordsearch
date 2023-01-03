@@ -49,7 +49,7 @@ class WordGame(ABC):
             if self.match_word(word, filter):
                 results.append(word)
 
-        return results
+        return results.sort()
 
 
     # gets all the words of the specified length
@@ -99,3 +99,4 @@ class WordGame(ABC):
         else:
             print("No matches found")
         print()
+        

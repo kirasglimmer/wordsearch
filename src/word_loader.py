@@ -22,7 +22,7 @@ class WordLoader:
             results.append(word.casefold())
 
         #print(f'Loaded {len(results)} words')
-        return results
+        return set(results)
 
 
     def get_words(self):

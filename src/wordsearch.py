@@ -46,7 +46,6 @@ class WordSearch(WordGame):
             super().print_words(filtered_words)
 
 
-
     def filter_set_handler(self, words):
         results = []
         set = self.set
